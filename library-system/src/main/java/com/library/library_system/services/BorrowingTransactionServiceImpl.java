@@ -8,7 +8,9 @@ import com.library.library_system.repository.BookCopyRepository;
 import com.library.library_system.repository.BorrowingTransactionRepository;
 import com.library.library_system.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -47,14 +49,14 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
 
         BorrowingTransaction transaction = BorrowingTransaction.builder()
                 .member(member)
-                .bookCopy(copy) // changed to bookCopy
+                .bookCopy(copy)
                 .borrowDate(LocalDate.now())
                 .dueDate(LocalDate.now().plusDays(14))
                 .build();
 
         transactionRepository.save(transaction);
 
-        // Optionally mark the copy as borrowed
+        //  mark the copy as borrowed
         copy.setStatus(BookCopyStatus.BORROWED);
         bookCopyRepository.save(copy);
 
@@ -95,8 +97,12 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
     }
 
     @Override
-    public BorrowingTransaction getTransactionById(Long id) {
-        return transactionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+    public BorrowingTransactionDTO getTransactionDTOById(Long id) {
+
+            BorrowingTransaction t = transactionRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found with ID " + id));
+
+            return BorrowingTransactionDTO.from(t);
+        }
     }
-}
+

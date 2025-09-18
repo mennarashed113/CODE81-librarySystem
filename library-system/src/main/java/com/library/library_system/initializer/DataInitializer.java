@@ -24,13 +24,13 @@ public class DataInitializer implements CommandLineRunner {
         if (userRepository.count() == 0) {
             User admin = new User();
             admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123")); // use a safe password in prod
-            admin.setRole(Role.ADMIN); // or "ADMIN" depending on your model
+            admin.setPassword(passwordEncoder.encode("admin123")); // use a safe password
+            admin.setRole(Role.ADMIN);
             userRepository.save(admin);
             System.out.println("Created admin user with username=admin and password=admin123");
         }
 
-        // Optional: convert plain-text passwords to BCrypt if needed
+
         userRepository.findAll().forEach(u -> {
             String pw = u.getPassword();
             if (pw != null && !(pw.startsWith("$2a$") || pw.startsWith("$2b$") || pw.startsWith("$2y$"))) {

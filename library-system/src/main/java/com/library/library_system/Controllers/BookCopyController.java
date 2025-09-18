@@ -29,12 +29,14 @@ public class BookCopyController {
     }
 
 
+    // Update a copy of a book
     @PutMapping("/{copyId}")
     public BookCopyDTO updateBookCopy(@PathVariable Long copyId,
                                       @RequestBody BookCopyDTO copyDTO) {
         return bookCopyService.updateBookCopy(copyId, copyDTO);
     }
 
+    // Delete a copy of a book
     @DeleteMapping("/{copyId}")
     public void deleteBookCopy(@PathVariable Long copyId) {
         bookCopyService.deleteBookCopy(copyId);

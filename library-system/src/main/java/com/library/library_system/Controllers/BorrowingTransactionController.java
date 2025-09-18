@@ -28,12 +28,16 @@ public class BorrowingTransactionController {
     }
 
 
+    // Get all borrowing transactions
     @GetMapping
     public List<BorrowingTransactionDTO> getAll() {
         return transactionService.getAllTransactions();
     }
+
+
+    // Get a specific borrowing transaction by ID
     @GetMapping("/{id}")
-    public BorrowingTransaction getById(@PathVariable Long id) {
-        return transactionService.getTransactionById(id);
+    public BorrowingTransactionDTO getById(@PathVariable Long id) {
+        return transactionService.getTransactionDTOById(id);
     }
 }

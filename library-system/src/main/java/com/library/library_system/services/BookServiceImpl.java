@@ -61,7 +61,7 @@ public class BookServiceImpl implements BookService {
         }
         bookRequest.setCategories(resolvedCategories);
 
-        // Save book
+
         return bookRepository.save(bookRequest);
     }
 

@@ -17,5 +17,7 @@ public interface BorrowingTransactionService {
     List<BorrowingTransactionDTO> getAllTransactions();
 
 
-    BorrowingTransaction getTransactionById(Long id);
+
+
+    BorrowingTransactionDTO getTransactionDTOById(Long id);
 }

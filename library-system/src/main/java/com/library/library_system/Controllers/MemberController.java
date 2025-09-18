@@ -16,26 +16,31 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    // Get all members
     @GetMapping
     public List<Member> getAllMembers() {
         return memberService.getAllMembers();
     }
 
+    // Get a specific member by ID
     @GetMapping("/{id}")
     public Member getMemberById(@PathVariable Long id) {
         return memberService.getMemberById(id);
     }
 
+    // Create a new member
     @PostMapping
     public Member createMember(@RequestBody Member member) {
         return memberService.createMember(member);
     }
 
+    // Update a member
     @PutMapping("/{id}")
     public Member updateMember(@PathVariable Long id, @RequestBody Member member) {
         return memberService.updateMember(id, member);
     }
 
+    // Delete a member by ID
     @DeleteMapping("/{id}")
     public void deleteMember(@PathVariable Long id) {
         memberService.deleteMember(id);
