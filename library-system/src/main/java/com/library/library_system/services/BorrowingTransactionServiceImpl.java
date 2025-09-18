@@ -2,10 +2,9 @@ package com.library.library_system.services;
 
 
 
-import com.library.library_system.model.Book;
-import com.library.library_system.model.BorrowingTransaction;
-import com.library.library_system.model.Member;
-import com.library.library_system.repository.BookRepository;
+import com.library.library_system.DTOS.BorrowingTransactionDTO;
+import com.library.library_system.model.*;
+import com.library.library_system.repository.BookCopyRepository;
 import com.library.library_system.repository.BorrowingTransactionRepository;
 import com.library.library_system.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,53 +25,78 @@ public class BorrowingTransactionServiceImpl implements BorrowingTransactionServ
     private MemberRepository memberRepository;
 
     @Autowired
-    private BookRepository bookRepository;
+    private BookCopyRepository bookCopyRepository;
 
     @Override
-    public String createBorrowing(Long memberId, Long bookId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
+    public String createBorrowing(Long memberId, Long bookCopyId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
 
+        BookCopy copy = bookCopyRepository.findById(bookCopyId)
+                .orElseThrow(() -> new RuntimeException("Book copy not found"));
+
+        // check max borrowed
         if (transactionRepository.findByMemberAndReturnDateIsNull(member).size() >= MAX_BORROWED_BOOKS) {
             return "Member has reached max limit of borrowed books.";
         }
 
-        if (transactionRepository.existsByBookAndReturnDateIsNull(book)) {
-            return "Book is currently borrowed by another member.";
+        // check if copy already borrowed
+        if (transactionRepository.existsByBookCopyAndReturnDateIsNull(copy)) {
+            return "Book copy is currently borrowed by another member.";
         }
 
         BorrowingTransaction transaction = BorrowingTransaction.builder()
                 .member(member)
-                .book(book)
+                .bookCopy(copy) // changed to bookCopy
                 .borrowDate(LocalDate.now())
                 .dueDate(LocalDate.now().plusDays(14))
                 .build();
+
         transactionRepository.save(transaction);
+
+        // Optionally mark the copy as borrowed
+        copy.setStatus(BookCopyStatus.BORROWED);
+        bookCopyRepository.save(copy);
+
         return "Borrowing recorded successfully.";
     }
 
     @Override
-    public String returnBook(Long memberId, Long bookId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("Member not found"));
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
+    public String returnBook(Long memberId, Long bookCopyId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        BorrowingTransaction transaction = transactionRepository.findByMemberAndBookAndReturnDateIsNull(member, book);
+        BookCopy copy = bookCopyRepository.findById(bookCopyId)
+                .orElseThrow(() -> new RuntimeException("Book copy not found"));
+
+        BorrowingTransaction transaction =
+                transactionRepository.findByMemberAndBookCopyAndReturnDateIsNull(member, copy);
+
         if (transaction == null) {
-            return "No active borrowing record found for this member and book.";
+            return "No active borrowing record found for this member and book copy.";
         }
 
         transaction.setReturnDate(LocalDate.now());
         transactionRepository.save(transaction);
+
+        // Mark copy as available again
+        copy.setStatus(BookCopyStatus.AVAILABLE);
+        bookCopyRepository.save(copy);
+
         return "Book returned successfully.";
     }
 
     @Override
-    public List<BorrowingTransaction> getAllTransactions() {
-        return transactionRepository.findAll();
+    public List<BorrowingTransactionDTO> getAllTransactions() {
+        List<BorrowingTransaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+                .map(BorrowingTransactionDTO::from)
+                .toList();
     }
 
     @Override
     public BorrowingTransaction getTransactionById(Long id) {
-        return transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction not found"));
+        return transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
     }
 }

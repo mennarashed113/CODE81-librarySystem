@@ -1,5 +1,6 @@
 package com.library.library_system.Controllers;
 
+import com.library.library_system.DTOS.BorrowingTransactionDTO;
 import com.library.library_system.model.BorrowingTransaction;
 import com.library.library_system.services.BorrowingTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +15,23 @@ public class BorrowingTransactionController {
     @Autowired
     private BorrowingTransactionService transactionService;
 
+    // Borrow a specific book copy
     @PostMapping
-    public String create(@RequestParam Long memberId, @RequestParam Long bookId) {
-        return transactionService.createBorrowing(memberId, bookId);
+    public String create(@RequestParam Long memberId, @RequestParam Long bookCopyId) {
+        return transactionService.createBorrowing(memberId, bookCopyId);
     }
 
+    // Return a specific book copy
     @PostMapping("/return")
-    public String returnBook(@RequestParam Long memberId, @RequestParam Long bookId) {
-        return transactionService.returnBook(memberId, bookId);
+    public String returnBook(@RequestParam Long memberId, @RequestParam Long bookCopyId) {
+        return transactionService.returnBook(memberId, bookCopyId);
     }
+
 
     @GetMapping
-    public List<BorrowingTransaction> getAll() {
+    public List<BorrowingTransactionDTO> getAll() {
         return transactionService.getAllTransactions();
     }
-
     @GetMapping("/{id}")
     public BorrowingTransaction getById(@PathVariable Long id) {
         return transactionService.getTransactionById(id);

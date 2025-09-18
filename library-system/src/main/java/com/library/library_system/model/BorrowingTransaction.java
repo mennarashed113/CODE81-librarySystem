@@ -19,7 +19,7 @@ public class BorrowingTransaction {
     private Member member;
 
     @ManyToOne
-    private Book book;
+    private BookCopy bookCopy;
 
     private LocalDate borrowDate;
     private LocalDate dueDate;
