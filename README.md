@@ -45,7 +45,7 @@ A secure, extensible backend API built with **Java, Spring Boot, and MySQL**. It
 - **BookCopy management** – Add and manage physical copies of each book  
 
 ### 5️⃣ Logging & Auditing  
-- Console logs for registration, login, and borrowing events  
+- Console logs for registration, login
 
 ---
 
