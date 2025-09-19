@@ -102,7 +102,7 @@ public class BookServiceImpl implements BookService {
         existingBook.setSummary(updatedBookDTO.summary());
         existingBook.setCoverImageUrl(updatedBookDTO.coverImageUrl());
 
-        // save
+
         Book saved = bookRepository.save(existingBook);
 
         // return as DTO to avoid lazy errors
